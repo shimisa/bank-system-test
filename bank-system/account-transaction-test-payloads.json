@@ -1,0 +1,360 @@
+{
+  "accountEndpoints": {
+    "createAccount": {
+      "endpoint": "POST /api/accounts",
+      "payloads": {
+        "checkingAccount": {
+          "description": "Create a checking account with initial balance",
+          "payload": {
+            "customerId": 1,
+            "accountType": "CHECKING",
+            "initialBalance": 1000.00,
+            "currency": "USD"
+          }
+        },
+        "savingsAccount": {
+          "description": "Create a savings account",
+          "payload": {
+            "customerId": 2,
+            "accountType": "SAVINGS",
+            "initialBalance": 5000.00,
+            "currency": "ILS"
+          }
+        },
+        "businessAccount": {
+          "description": "Create a business account",
+          "payload": {
+            "customerId": 3,
+            "accountType": "BUSINESS",
+            "initialBalance": 25000.00,
+            "currency": "EUR"
+          }
+        },
+        "vipAccount": {
+          "description": "Create a VIP account with high initial balance",
+          "payload": {
+            "customerId": 4,
+            "accountType": "VIP",
+            "initialBalance": 100000.00,
+            "currency": "USD"
+          }
+        },
+        "zeroBalanceAccount": {
+          "description": "Create account with zero initial balance",
+          "payload": {
+            "customerId": 1,
+            "accountType": "CHECKING",
+            "initialBalance": 0.00,
+            "currency": "USD"
+          }
+        },
+        "multiCurrencyExamples": {
+          "gbp_account": {
+            "customerId": 2,
+            "accountType": "SAVINGS",
+            "initialBalance": 2500.00,
+            "currency": "GBP"
+          },
+          "jpy_account": {
+            "customerId": 3,
+            "accountType": "CHECKING",
+            "initialBalance": 500000.00,
+            "currency": "JPY"
+          },
+          "cad_account": {
+            "customerId": 4,
+            "accountType": "BUSINESS",
+            "initialBalance": 15000.00,
+            "currency": "CAD"
+          }
+        }
+      }
+    },
+    "getAccountsByCustomer": {
+      "endpoint": "GET /api/accounts/customer/{customerId}",
+      "description": "Get all accounts for a specific customer",
+      "examples": [
+        "GET /api/accounts/customer/1",
+        "GET /api/accounts/customer/2",
+        "GET /api/accounts/customer/3"
+      ]
+    },
+    "getAccountByNumber": {
+      "endpoint": "GET /api/accounts/{accountNumber}",
+      "description": "Get account details by account number",
+      "examples": [
+        "GET /api/accounts/ACC1234567890001",
+        "GET /api/accounts/ACC1234567890002"
+      ]
+    }
+  },
+  "transactionEndpoints": {
+    "processTransfer": {
+      "endpoint": "POST /api/v1/transfer",
+      "payloads": {
+        "basicTransfer": {
+          "description": "Basic transfer between accounts in ILS",
+          "payload": {
+            "fromAccountNumber": "ACC1234567890001",
+            "toAccountNumber": "ACC1234567890002",
+            "amount": 500.00,
+            "currency": "ILS",
+            "description": "Monthly payment",
+            "referenceNumber": "REF001"
+          }
+        },
+        "usdTransfer": {
+          "description": "Transfer in USD with description",
+          "payload": {
+            "fromAccountNumber": "ACC1234567890003",
+            "toAccountNumber": "ACC1234567890004",
+            "amount": 1000.00,
+            "currency": "USD",
+            "description": "Business payment for services",
+            "referenceNumber": "INV-2024-001"
+          }
+        },
+        "euroTransfer": {
+          "description": "Euro transfer between business accounts",
+          "payload": {
+            "fromAccountNumber": "ACC1234567890005",
+            "toAccountNumber": "ACC1234567890006",
+            "amount": 2500.00,
+            "currency": "EUR",
+            "description": "Supplier payment",
+            "referenceNumber": "SUPP-PAY-789"
+          }
+        },
+        "smallTransfer": {
+          "description": "Small amount transfer (minimum allowed)",
+          "payload": {
+            "fromAccountNumber": "ACC1234567890001",
+            "toAccountNumber": "ACC1234567890002",
+            "amount": 0.01,
+            "currency": "ILS",
+            "description": "Test transfer",
+            "referenceNumber": "TEST-001"
+          }
+        },
+        "largeTransfer": {
+          "description": "Large amount transfer",
+          "payload": {
+            "fromAccountNumber": "ACC1234567890007",
+            "toAccountNumber": "ACC1234567890008",
+            "amount": 50000.00,
+            "currency": "USD",
+            "description": "Investment transfer",
+            "referenceNumber": "INV-TRANSFER-2024"
+          }
+        },
+        "transferWithoutOptionalFields": {
+          "description": "Transfer with only required fields",
+          "payload": {
+            "fromAccountNumber": "ACC1234567890001",
+            "toAccountNumber": "ACC1234567890002",
+            "amount": 250.00,
+            "currency": "ILS"
+          }
+        },
+        "multiCurrencyTransfers": {
+          "gbpTransfer": {
+            "fromAccountNumber": "ACC1234567890009",
+            "toAccountNumber": "ACC1234567890010",
+            "amount": 750.00,
+            "currency": "GBP",
+            "description": "UK payment",
+            "referenceNumber": "UK-PAY-001"
+          },
+          "jpyTransfer": {
+            "fromAccountNumber": "ACC1234567890011",
+            "toAccountNumber": "ACC1234567890012",
+            "amount": 100000.00,
+            "currency": "JPY",
+            "description": "Japanese market payment",
+            "referenceNumber": "JP-MKT-001"
+          },
+          "cadTransfer": {
+            "fromAccountNumber": "ACC1234567890013",
+            "toAccountNumber": "ACC1234567890014",
+            "amount": 3000.00,
+            "currency": "CAD",
+            "description": "Canadian supplier payment",
+            "referenceNumber": "CA-SUPP-001"
+          }
+        }
+      }
+    }
+  },
+  "validationTestCases": {
+    "accountValidation": {
+      "missingCustomerId": {
+        "endpoint": "POST /api/accounts",
+        "description": "Should return validation error for missing customer ID",
+        "payload": {
+          "accountType": "CHECKING",
+          "initialBalance": 1000.00,
+          "currency": "USD"
+        }
+      },
+      "invalidAccountType": {
+        "endpoint": "POST /api/accounts",
+        "description": "Should return validation error for invalid account type",
+        "payload": {
+          "customerId": 1,
+          "accountType": "INVALID_TYPE",
+          "initialBalance": 1000.00,
+          "currency": "USD"
+        }
+      },
+      "negativeBalance": {
+        "endpoint": "POST /api/accounts",
+        "description": "Should return validation error for negative initial balance",
+        "payload": {
+          "customerId": 1,
+          "accountType": "CHECKING",
+          "initialBalance": -500.00,
+          "currency": "USD"
+        }
+      },
+      "invalidCurrency": {
+        "endpoint": "POST /api/accounts",
+        "description": "Should return validation error for invalid currency",
+        "payload": {
+          "customerId": 1,
+          "accountType": "CHECKING",
+          "initialBalance": 1000.00,
+          "currency": "INVALID_CURRENCY"
+        }
+      }
+    },
+    "transferValidation": {
+      "missingFromAccount": {
+        "endpoint": "POST /api/v1/transfer",
+        "description": "Should return validation error for missing from account",
+        "payload": {
+          "toAccountNumber": "ACC1234567890002",
+          "amount": 500.00,
+          "currency": "ILS"
+        }
+      },
+      "missingToAccount": {
+        "endpoint": "POST /api/v1/transfer",
+        "description": "Should return validation error for missing to account",
+        "payload": {
+          "fromAccountNumber": "ACC1234567890001",
+          "amount": 500.00,
+          "currency": "ILS"
+        }
+      },
+      "zeroAmount": {
+        "endpoint": "POST /api/v1/transfer",
+        "description": "Should return validation error for zero amount",
+        "payload": {
+          "fromAccountNumber": "ACC1234567890001",
+          "toAccountNumber": "ACC1234567890002",
+          "amount": 0.00,
+          "currency": "ILS"
+        }
+      },
+      "negativeAmount": {
+        "endpoint": "POST /api/v1/transfer",
+        "description": "Should return validation error for negative amount",
+        "payload": {
+          "fromAccountNumber": "ACC1234567890001",
+          "toAccountNumber": "ACC1234567890002",
+          "amount": -100.00,
+          "currency": "ILS"
+        }
+      },
+      "sameAccountTransfer": {
+        "endpoint": "POST /api/v1/transfer",
+        "description": "Should return business logic error for same account transfer",
+        "payload": {
+          "fromAccountNumber": "ACC1234567890001",
+          "toAccountNumber": "ACC1234567890001",
+          "amount": 500.00,
+          "currency": "ILS"
+        }
+      }
+    }
+  },
+  "sequentialTestScenario": {
+    "description": "Test scenario to run in sequence",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Create individual customer",
+        "endpoint": "POST /api/customers/individual",
+        "payload": {
+          "name": "John Doe",
+          "email": "john.doe@testbank.com",
+          "phone": "+1-555-0100",
+          "address": "100 Test St, Test City",
+          "nationalId": "123-45-6789",
+          "dateOfBirth": "1990-01-01"
+        }
+      },
+      {
+        "step": 2,
+        "action": "Create business customer",
+        "endpoint": "POST /api/customers/business",
+        "payload": {
+          "name": "Test Business Inc",
+          "email": "info@testbusiness.com",
+          "phone": "+1-555-0200",
+          "address": "200 Business Ave, Test City",
+          "businessRegistrationNumber": "BRN-TEST-001",
+          "businessType": "Corporation",
+          "industry": "Technology",
+          "taxId": "12-3456789"
+        }
+      },
+      {
+        "step": 3,
+        "action": "Create checking account for John (use customer ID from step 1)",
+        "endpoint": "POST /api/accounts",
+        "payload": {
+          "customerId": "{CUSTOMER_ID_FROM_STEP_1}",
+          "accountType": "CHECKING",
+          "initialBalance": 5000.00,
+          "currency": "USD"
+        }
+      },
+      {
+        "step": 4,
+        "action": "Create business account (use customer ID from step 2)",
+        "endpoint": "POST /api/accounts",
+        "payload": {
+          "customerId": "{CUSTOMER_ID_FROM_STEP_2}",
+          "accountType": "BUSINESS",
+          "initialBalance": 10000.00,
+          "currency": "USD"
+        }
+      },
+      {
+        "step": 5,
+        "action": "Transfer money between accounts (use account numbers from steps 3 & 4)",
+        "endpoint": "POST /api/v1/transfer",
+        "payload": {
+          "fromAccountNumber": "{ACCOUNT_NUMBER_FROM_STEP_3}",
+          "toAccountNumber": "{ACCOUNT_NUMBER_FROM_STEP_4}",
+          "amount": 1500.00,
+          "currency": "USD",
+          "description": "Payment for services",
+          "referenceNumber": "PAY-001"
+        }
+      },
+      {
+        "step": 6,
+        "action": "Get account details to verify transfer",
+        "endpoint": "GET /api/accounts/{ACCOUNT_NUMBER_FROM_STEP_3}"
+      },
+      {
+        "step": 7,
+        "action": "Get all accounts for John to see updated balance",
+        "endpoint": "GET /api/accounts/customer/{CUSTOMER_ID_FROM_STEP_1}"
+      }
+    ]
+  }
+}
+

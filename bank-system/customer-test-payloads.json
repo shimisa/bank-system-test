@@ -1,0 +1,132 @@
+{
+  "individualCustomer": {
+    "endpoint": "POST /api/customers/individual",
+    "payload": {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "phone": "+1-555-0123",
+      "address": "123 Main Street, New York, NY 10001",
+      "nationalId": "123-45-6789",
+      "dateOfBirth": "1990-05-15",
+      "occupation": "Software Engineer"
+    }
+  },
+  "businessCustomer": {
+    "endpoint": "POST /api/customers/business",
+    "payload": {
+      "name": "Tech Solutions Inc",
+      "email": "contact@techsolutions.com",
+      "phone": "+1-555-0456",
+      "address": "456 Business Ave, San Francisco, CA 94105",
+      "businessRegistrationNumber": "BRN-2023-001234",
+      "businessType": "Corporation",
+      "industry": "Information Technology",
+      "taxId": "12-3456789"
+    }
+  },
+  "vipCustomer": {
+    "endpoint": "POST /api/customers/vip",
+    "payload": {
+      "name": "Robert Smith",
+      "email": "robert.smith@premium.com",
+      "phone": "+1-555-0789",
+      "address": "789 Luxury Lane, Beverly Hills, CA 90210",
+      "vipLevel": "PLATINUM",
+      "minimumBalance": 100000.00,
+      "personalBanker": "Jane Wilson",
+      "specialServices": "Private Banking, Investment Advisory, Concierge Services"
+    }
+  },
+  "additionalTestCases": {
+    "individualCustomer_minimal": {
+      "endpoint": "POST /api/customers/individual",
+      "description": "Minimal required fields only",
+      "payload": {
+        "name": "Jane Smith",
+        "email": "jane.smith@test.com",
+        "phone": "+1-555-0001",
+        "address": "100 Test St, Test City, TC 12345",
+        "nationalId": "987-65-4321",
+        "dateOfBirth": "1985-12-01"
+      }
+    },
+    "businessCustomer_small": {
+      "endpoint": "POST /api/customers/business",
+      "description": "Small business example",
+      "payload": {
+        "name": "Local Bakery LLC",
+        "email": "info@localbakery.com",
+        "phone": "+1-555-0202",
+        "address": "22 Baker Street, Small Town, ST 54321",
+        "businessRegistrationNumber": "LLC-2023-009876",
+        "businessType": "Limited Liability Company",
+        "industry": "Food Service",
+        "taxId": "98-7654321"
+      }
+    },
+    "vipCustomer_gold": {
+      "endpoint": "POST /api/customers/vip",
+      "description": "Gold level VIP customer",
+      "payload": {
+        "name": "Maria Garcia",
+        "email": "maria.garcia@wealth.com",
+        "phone": "+1-555-0303",
+        "address": "333 Elite Boulevard, Miami, FL 33101",
+        "vipLevel": "GOLD",
+        "minimumBalance": 50000.00,
+        "personalBanker": "Michael Chen",
+        "specialServices": "Priority Support, Fee Waivers"
+      }
+    },
+    "vipCustomer_diamond": {
+      "endpoint": "POST /api/customers/vip",
+      "description": "Diamond level VIP customer",
+      "payload": {
+        "name": "Alexander Johnson",
+        "email": "alex.johnson@ultrawealth.com",
+        "phone": "+1-555-0404",
+        "address": "888 Platinum Plaza, Manhattan, NY 10022",
+        "vipLevel": "DIAMOND",
+        "minimumBalance": 1000000.00,
+        "personalBanker": "Sarah Thompson",
+        "specialServices": "White Glove Service, Private Jet Access, Estate Planning"
+      }
+    }
+  },
+  "validationTestCases": {
+    "invalidEmail": {
+      "endpoint": "POST /api/customers/individual",
+      "description": "Should return validation error for invalid email",
+      "payload": {
+        "name": "Test User",
+        "email": "invalid-email",
+        "phone": "+1-555-0000",
+        "address": "Test Address",
+        "nationalId": "000-00-0000",
+        "dateOfBirth": "2000-01-01"
+      }
+    },
+    "missingRequiredFields": {
+      "endpoint": "POST /api/customers/business",
+      "description": "Should return validation errors for missing required fields",
+      "payload": {
+        "name": "",
+        "email": "",
+        "phone": "+1-555-0000"
+      }
+    },
+    "negativeMinimumBalance": {
+      "endpoint": "POST /api/customers/vip",
+      "description": "Should return validation error for negative minimum balance",
+      "payload": {
+        "name": "Test VIP",
+        "email": "test@vip.com",
+        "phone": "+1-555-0000",
+        "address": "Test Address",
+        "vipLevel": "GOLD",
+        "minimumBalance": -1000.00
+      }
+    }
+  }
+}
+
