@@ -118,22 +118,117 @@ Money transfers produce events to Kafka topic: `bank-transactions`
 ### Event Structure
 ```json
 {
-  "transactionId": "TXN1691234567ABC123",
-  "fromAccountNumber": "ACC1691234567001",
-  "toAccountNumber": "ACC1691234567002",
+  "eventType": "transaction",
+  "timestamp": "2025-08-20T10:30:00.123Z",
+  "transactionId": 1,
+  "fromAccount": {
+    "id": 1,
+    "balanceBefore": 5000.00,
+    "balanceAfter": 4000.00,
+    "customer": {
+      "id": 1,
+      "name": "John Doe",
+      "type": "individual",
+      "personalId": "123-45-6789",
+      "businessNumber": null
+    }
+  },
+  "toAccount": {
+    "id": 2,
+    "balanceBefore": 2000.00,
+    "balanceAfter": 3000.00,
+    "customer": {
+      "id": 2,
+      "name": "Tech Corp Ltd",
+      "type": "business",
+      "personalId": null,
+      "businessNumber": "BRN-2023-001234"
+    }
+  },
   "amount": 1000.00,
-  "transactionType": "TRANSFER",
-  "status": "COMPLETED",
+  "currency": "USD",
   "description": "Payment for services",
-  "timestamp": "2025-08-14T10:30:00",
-  "customerId": "1",
-  "eventType": "TRANSFER_COMPLETED"
+  "metadata": {
+    "processedBy": "TransactionService",
+    "source": "API"
+  }
 }
 ```
 
-### Event Types
-- `TRANSFER_COMPLETED` - Transfer completed successfully
-- `TRANSFER_FAILED` - Transfer failed
+### Event Features
+- Complete transaction details with before/after balances
+- Customer information for both sender and receiver
+- Metadata for tracking and auditing
+- Timestamp in ISO format
+- Currency information
+
+## Setup Instructions
+
+### Prerequisites
+- Docker and Docker Compose
+- Java 21+
+- Maven 3.6+
+
+### 1. Start Infrastructure Services
+
+The project includes a Docker Compose file that sets up MySQL and Kafka with all required dependencies.
+
+```bash
+# Start MySQL and Kafka services
+docker-compose up -d
+
+# Verify services are running
+docker-compose ps
+```
+
+This will start:
+- **MySQL 8.0** on port `3306`
+- **Apache Kafka** on port `9092`
+- **Zookeeper** on port `2181`
+- **Kafka UI** on port `8080` (for monitoring)
+
+### 2. Database Configuration
+
+The application is configured to connect to the MySQL database automatically. Database schema will be created on first startup using JPA/Hibernate.
+
+**Connection Details:**
+- Host: `localhost:3306`
+- Database: `bankdb`
+- Username: `bank_user`
+- Password: `bank_password`
+
+### 3. Kafka Configuration
+
+Kafka topics are automatically created by the application:
+- **Topic:** `transaction`
+- **Partitions:** 3
+- **Replication Factor:** 1
+
+### 4. Run the Application
+
+```bash
+# Build and run the application
+mvn clean spring-boot:run
+
+# Or run tests
+mvn test
+```
+
+### 5. Access Services
+
+- **Application API:** http://localhost:8080/api
+- **Kafka UI:** http://localhost:8081 (to monitor Kafka topics and messages)
+- **MySQL:** Connect using any MySQL client on port 3306
+
+### 6. Stop Services
+
+```bash
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (clears all data)
+docker-compose down -v
+```
 
 ## Database Schema
 
@@ -150,48 +245,6 @@ Money transfers produce events to Kafka topic: `bank-transactions`
 - Records all money transfers
 - Relationship with source and destination accounts
 - Transaction statuses: PENDING, COMPLETED, FAILED, CANCELLED
-
-## Running the Application
-
-### Prerequisites
-1. **MySQL Database**: Create a database named `bankdb`
-2. **Kafka Server**: Install and run Kafka
-
-### Setup MySQL
-```sql
-CREATE DATABASE bankdb;
-CREATE USER 'bankuser'@'localhost' IDENTIFIED BY 'bankpass';
-GRANT ALL PRIVILEGES ON bankdb.* TO 'bankuser'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-### Start Kafka
-```bash
-# Start Zookeeper
-bin/zookeeper-server-start.sh config/zookeeper.properties
-
-# Start Kafka
-bin/kafka-server-start.sh config/server.properties
-```
-
-### Run the Application
-```bash
-mvn spring-boot:run
-```
-
-### Database Access
-- **MySQL Connection**: `jdbc:mysql://localhost:3306/bankdb`
-- **Username**: `bankuser`
-- **Password**: `bankpass`
-
-## Configuration
-
-Update `application.properties` with your MySQL configuration:
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/bankdb
-spring.datasource.username=bankuser
-spring.datasource.password=bankpass
-```
 
 ## Security Features
 
