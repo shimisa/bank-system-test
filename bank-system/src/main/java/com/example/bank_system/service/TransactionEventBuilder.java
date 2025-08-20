@@ -102,46 +102,19 @@ public class TransactionEventBuilder {
         customerDetails.setId(customer.getId());
         customerDetails.setName(customer.getName());
 
-        log.info("Building customer details for customer ID: {}, class: {}, actual class: {}",
-                customer.getId(), customer.getClass().getSimpleName(), customer.getClass().getName());
-
-        // Force Hibernate to load the actual customer data
-        Customer realCustomer = customer;
-        if (customer.getClass().getName().contains("HibernateProxy")) {
-            log.info("Customer is a Hibernate proxy, attempting to get real implementation");
-            // Handle Hibernate proxy case
-            realCustomer = (Customer) org.hibernate.Hibernate.unproxy(customer);
-            log.info("Real customer class after unproxying: {}", realCustomer.getClass().getName());
-        }
-
         // Set type and specific identifiers based on customer type
-        if (realCustomer instanceof IndividualCustomer) {
-            IndividualCustomer individual = (IndividualCustomer) realCustomer;
+        if (customer instanceof IndividualCustomer) {
+            IndividualCustomer individual = (IndividualCustomer) customer;
             customerDetails.setType("individual");
             customerDetails.setPersonalId(individual.getNationalId());
-            log.info("Individual customer - nationalId: {}", individual.getNationalId());
-        } else if (realCustomer instanceof BusinessCustomer) {
-            BusinessCustomer business = (BusinessCustomer) realCustomer;
+        } else if (customer instanceof BusinessCustomer) {
+            BusinessCustomer business = (BusinessCustomer) customer;
             customerDetails.setType("business");
             customerDetails.setBusinessNumber(business.getBusinessRegistrationNumber());
-            log.info("Business customer - registrationNumber: {}", business.getBusinessRegistrationNumber());
-        } else if (realCustomer instanceof VIPCustomer) {
-            VIPCustomer vip = (VIPCustomer) realCustomer;
+        } else if (customer instanceof VIPCustomer) {
             customerDetails.setType("vip");
-            // VIP customers should use a standard VIP identifier
             customerDetails.setPersonalId("VIP-" + customer.getId());
-            // Keep businessNumber as null for VIP customers unless they extend BusinessCustomer
-            customerDetails.setBusinessNumber(null);
-            log.info("VIP customer - personalId: {}, vipLevel: {}", customerDetails.getPersonalId(), vip.getVipLevel());
-        } else {
-            customerDetails.setType("unknown");
-            log.error("Unknown customer type for customer ID: {}, class: {}, superclass: {}",
-                    customer.getId(), realCustomer.getClass().getName(), realCustomer.getClass().getSuperclass().getName());
         }
-
-        log.info("Final customer details - ID: {}, type: {}, personalId: {}, businessNumber: {}",
-                customerDetails.getId(), customerDetails.getType(),
-                customerDetails.getPersonalId(), customerDetails.getBusinessNumber());
 
         return customerDetails;
     }

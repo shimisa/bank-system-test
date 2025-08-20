@@ -16,7 +16,7 @@ public class TransactionEvent {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime timestamp;
 
-    private Long transactionId; // Changed to Long to match JSON
+    private Long transactionId;
     private AccountDetails fromAccount;
     private AccountDetails toAccount;
     private BigDecimal amount;
