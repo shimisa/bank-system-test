@@ -19,7 +19,7 @@ public class TransactionProducer {
     private static final String TRANSACTION_TOPIC = "transaction";
 
     /**
-     * Sends a transaction event to the 'transaction' topic
+     * Sends a transaction event to the 'transaction' topic asynchronously
      */
     public void sendTransactionEvent(TransactionEvent event) {
         try {

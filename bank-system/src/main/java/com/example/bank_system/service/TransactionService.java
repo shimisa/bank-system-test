@@ -61,8 +61,10 @@ public class TransactionService {
         transaction.setProcessedAt(LocalDateTime.now());
 
         try {
-            // Only wrap the database save operation
+            // Save the transaction and updated account balances
             transaction = transactionRepository.save(transaction);
+            accountService.saveAccount(fromAccount);
+            accountService.saveAccount(toAccount);
         } catch (Exception e) {
             // Mark transaction as failed
             transaction.setStatus(Transaction.TransactionStatus.FAILED);

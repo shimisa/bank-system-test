@@ -68,6 +68,11 @@ public class AccountService {
             .collect(Collectors.toList());
     }
 
+    public Account saveAccount(Account account) {
+        log.info("Saving account: {}", account.getAccountNumber());
+        return accountRepository.save(account);
+    }
+
     private String generateAccountNumber() {
         String accountNumber;
         do {
