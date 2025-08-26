@@ -17,7 +17,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class TransactionService {
 
@@ -25,7 +24,9 @@ public class TransactionService {
     private final AccountService accountService;
     private final TransactionProducer transactionProducer;
     private final TransactionEventBuilder transactionEventBuilder;
+    private final TransactionFailureService transactionFailureService;
 
+    @Transactional
     public TransactionApiResponse processTransfer(TransferRequest request) {
         log.info("Processing transfer from {} to {} amount: {} {}",
                 request.getFromAccountNumber(), request.getToAccountNumber(), request.getAmount(), request.getCurrency());
@@ -66,17 +67,13 @@ public class TransactionService {
             accountService.saveAccount(fromAccount);
             accountService.saveAccount(toAccount);
         } catch (Exception e) {
-            // Mark transaction as failed
-            transaction.setStatus(Transaction.TransactionStatus.FAILED);
-            transactionRepository.save(transaction);
+            log.error("Transfer failed during save operations. Transaction ID: {}", transaction.getTransactionId(), e);
 
-            // Send failed transaction event
-            TransactionEvent failedEvent = transactionEventBuilder.buildFailedTransferEvent(
-                transaction, fromBalanceBefore, toBalanceBefore, request.getCurrency());
-            transactionProducer.sendTransactionEvent(failedEvent);
+            // Handle failure in a separate transaction to ensure failure record is saved
+            transactionFailureService.handleTransferFailure(transaction, fromBalanceBefore, toBalanceBefore, request.getCurrency(), e);
 
-            log.error("Transfer failed. Transaction ID: {}", transaction.getTransactionId(), e);
-            throw new RuntimeException("Transfer failed: " + e.getMessage());
+            // Re-throw to trigger rollback of the main transaction
+            throw new RuntimeException("Transfer failed: " + e.getMessage(), e);
         }
 
         // Get balances after transfer
